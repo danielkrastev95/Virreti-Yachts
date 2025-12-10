@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Virreti Yachts
 
-## Getting Started
+Sitio web oficial y configurador para **Virreti Yachts**, fabricante español de embarcaciones de lujo.
 
-First, run the development server:
+## 🚤 Modelo Destacado
+
+### VIRRETI V20 OPEN
+- **Eslora:** 6.15m
+- **Manga:** 2.35m
+- **Capacidad:** 8 personas
+- **Precio base:** 30.860€ (sin IVA ni motor)
+
+## ✨ Características
+
+### Página Principal
+- Hero section con imagen del V20 OPEN
+- Especificaciones técnicas
+- Sección "Sobre Nosotros"
+- Galería de modelos
+
+### Configurador Interactivo (`/configurator`)
+- **Paso 1 - Exterior:** Selección de color de casco y tapicería
+- **Paso 2 - Motor:** 3 opciones de motorización (Mercury/Tohatsu)
+- **Paso 3 - Extras:** Personalización con opciones adicionales
+- **Paso 4 - Resumen:** Desglose de precios con IVA (21%)
+
+### Funcionalidades del Configurador
+- 🔍 Lupa de magnificación interactiva (hover en desktop, tap en móvil)
+- 📱 Diseño responsive (desktop y móvil)
+- 💰 Cálculo de precios en tiempo real
+- 🎨 Visualización de colores de tapicería
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Estilos:** Tailwind CSS v4
+- **Estado:** Zustand
+- **Animaciones:** Framer Motion
+- **Tipografía:** Montserrat, DM Sans
+- **Lenguaje:** TypeScript
+
+## 🚀 Instalación
 
 ```bash
+# Clonar repositorio
+git clone https://github.com/danielkrastev95/Virreti-Yachts.git
+
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Estructura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Páginas (Next.js App Router)
+│   ├── page.tsx           # Página principal
+│   └── configurator/      # Configurador
+├── components/
+│   ├── configurator/      # Componentes del configurador
+│   └── layout/            # Navbar, Footer
+├── data/
+│   └── boats.ts           # Datos del modelo y precios
+└── store/
+    └── configuratorStore.ts # Estado global (Zustand)
+```
 
-## Learn More
+## 📄 Licencia
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proyecto privado - Virreti Yachts © 2025
