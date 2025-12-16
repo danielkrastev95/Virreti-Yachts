@@ -79,13 +79,38 @@ export interface UpholsteryColor {
 }
 
 export const upholsteryColors: UpholsteryColor[] = [
-  { id: "molder-nascar", name: "Molder Nascar", hex: "#1A1A1A", price: 0 },
-  { id: "molder-camel", name: "Molder Camel", hex: "#C19A6B", price: 0 },
-  { id: "molder-plata", name: "Molder Plata", hex: "#C0C0C0", price: 0 },
-  { id: "molder-fume", name: "Molder Fumé", hex: "#4A4A4A", price: 0 },
-  { id: "molder-tropic", name: "Molder Tropic", hex: "#2E8B57", price: 0 },
-  { id: "molder-rojo", name: "Molder Rojo", hex: "#B22222", price: 0 },
-  { id: "molder-blue", name: "Molder Blue", hex: "#1E3A5F", price: 0, image: "/boat/molder_azul.png" },
+  { id: "molder-nacar", name: "Molder Nácar", hex: "#F5F5DC", price: 0, image: "/boat/tapiceria/tapiceria-Nacar.png" },
+  { id: "molder-camel", name: "Molder Camel", hex: "#C19A6B", price: 0, image: "/boat/tapiceria/tapiceria-Camel.png" },
+  { id: "molder-plata", name: "Molder Plata", hex: "#C0C0C0", price: 0, image: "/boat/tapiceria/tapiceria-Plata.png" },
+  { id: "molder-fume", name: "Molder Fumé", hex: "#4A4A4A", price: 0, image: "/boat/tapiceria/tapiceria-Fume.png" },
+  { id: "molder-tropic", name: "Molder Tropic", hex: "#2E8B57", price: 0, image: "/boat/tapiceria/tapiceria-tropic.png" },
+  { id: "molder-rojo", name: "Molder Rojo", hex: "#B22222", price: 0, image: "/boat/tapiceria/tapiceria-rojo.png" },
+  { id: "molder-blue", name: "Molder Blue", hex: "#1E3A5F", price: 0, image: "/boat/tapiceria/tapiceria-Blue.png" },
+];
+
+// Floor Colors (Suelos) - with overlay images
+export interface FloorColor {
+  id: string;
+  name: string;
+  hex: string;
+  price: number;
+  image: string;
+  referenceImage?: string; // Preview image for color selector
+}
+
+export const floorColors: FloorColor[] = [
+  { id: "teca-negro", name: "Teca - Negro", hex: "#6B5344", price: 0, image: "/boat/suelos/Teca - Negro.png", referenceImage: "/boat/suelos/referencias/suelo-teca-negro.png" },
+  { id: "teca-crema", name: "Teca - Crema", hex: "#D2B48C", price: 0, image: "/boat/suelos/Teca - Crema.png", referenceImage: "/boat/suelos/referencias/suelo-teca-crema.png" },
+  { id: "teca-gris", name: "Teca - Gris", hex: "#9C8B7A", price: 0, image: "/boat/suelos/Teca - Gris.png", referenceImage: "/boat/suelos/referencias/suelo-teca-gris.png" },
+  { id: "antracita", name: "Antracita", hex: "#383838", price: 0, image: "/boat/suelos/Antracita.png", referenceImage: "/boat/suelos/referencias/suelo-antracita.png" },
+  { id: "camel-blanco", name: "Camel - Blanco", hex: "#C19A6B", price: 0, image: "/boat/suelos/Camel - Blanco.png", referenceImage: "/boat/suelos/referencias/suelo-camel-blanco.png" },
+  { id: "camel-negro", name: "Camel - Negro", hex: "#8B6914", price: 0, image: "/boat/suelos/Camel - Negro.png", referenceImage: "/boat/suelos/referencias/suelo-camel-negro.png" },
+  { id: "gris-gris-claro", name: "Gris - Gris Claro", hex: "#808080", price: 0, image: "/boat/suelos/Gris - Gris claro.png", referenceImage: "/boat/suelos/referencias/suelo-gris-gris-claro.png" },
+  { id: "gris-negro", name: "Gris - Negro", hex: "#505050", price: 0, image: "/boat/suelos/Gris - Negro.png", referenceImage: "/boat/suelos/referencias/suelo-gris-negro.png" },
+  { id: "negro-gris", name: "Negro - Gris", hex: "#2D2D2D", price: 0, image: "/boat/suelos/Negro - Gris.png", referenceImage: "/boat/suelos/referencias/suelo-negro-gris.png" },
+  { id: "negro-negro", name: "Negro - Negro", hex: "#1A1A1A", price: 0, image: "/boat/suelos/negro - negro.png", referenceImage: "/boat/suelos/referencias/suelo-negro.png" },
+  { id: "gris-claro-gris", name: "Gris Claro - Gris", hex: "#A0A0A0", price: 0, image: "/boat/suelos/gris claro - gris.png", referenceImage: "/boat/suelos/referencias/suelo-gris-claro-gris.png" },
+  { id: "gris-claro-negro", name: "Gris Claro - Negro", hex: "#909090", price: 0, image: "/boat/suelos/gris claro - negro.png", referenceImage: "/boat/suelos/referencias/suelo-gris-claro-negro.png" },
 ];
 
 // Engine Options - 2025 Pricing

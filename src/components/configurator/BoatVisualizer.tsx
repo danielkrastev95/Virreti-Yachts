@@ -2,8 +2,8 @@
 
 import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { useSelectedModel, useSelectedUpholstery } from "@/store/configuratorStore";
-import { upholsteryColors } from "@/data/boats";
+import { useSelectedModel, useSelectedUpholstery, useSelectedFloor } from "@/store/configuratorStore";
+import { upholsteryColors, floorColors } from "@/data/boats";
 import { Search } from "lucide-react";
 
 interface BoatVisualizerProps {
@@ -13,9 +13,11 @@ interface BoatVisualizerProps {
 export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
   const selectedModel = useSelectedModel();
   const selectedUpholstery = useSelectedUpholstery();
+  const selectedFloor = useSelectedFloor();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Magnifier state
+  const [zoomEnabled, setZoomEnabled] = useState(false); // Toggle zoom on/off
   const [isHovering, setIsHovering] = useState(false);
   const [isTouchActive, setIsTouchActive] = useState(false); // For mobile tap-to-zoom
   const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
@@ -27,11 +29,17 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
   // Base boat image - always visible
   const baseImage = "/boat/barco_base.png";
 
-  // Memoized overlay images
-  const overlayImages = useMemo(() =>
+  // Memoized overlay images - upholstery
+  const upholsteryOverlays = useMemo(() =>
     upholsteryColors
       .filter(upholstery => upholstery.image)
       .map(upholstery => ({ id: upholstery.id, image: upholstery.image! })),
+    []
+  );
+
+  // Memoized overlay images - floors
+  const floorOverlays = useMemo(() =>
+    floorColors.map(floor => ({ id: floor.id, image: floor.image })),
     []
   );
 
@@ -73,13 +81,15 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
     });
   }, []);
 
-  // Desktop: hover behavior
+  // Desktop: hover behavior (only when zoom enabled)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!zoomEnabled) return;
     updatePosition(e.clientX, e.clientY);
   };
 
-  // Mobile: tap to place magnifier
+  // Mobile: tap to place magnifier (only when zoom enabled)
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!zoomEnabled) return;
     e.preventDefault();
     e.stopPropagation();
     const touch = e.touches[0];
@@ -87,8 +97,8 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
     setIsTouchActive(true);
   };
 
-  // Show magnifier on desktop hover OR mobile touch
-  const showMagnifier = isHovering || isTouchActive;
+  // Show magnifier only when zoom is enabled AND (hovering or touch active)
+  const showMagnifier = zoomEnabled && (isHovering || isTouchActive);
 
   return (
     <div className={`relative w-full ${className}`}>
@@ -115,7 +125,7 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
           />
 
           {/* All upholstery overlays - preloaded, visibility toggled */}
-          {overlayImages.map(overlay => (
+          {upholsteryOverlays.map(overlay => (
             <div
               key={overlay.id}
               className={`absolute inset-0 transition-opacity duration-150 pointer-events-none ${selectedUpholstery?.id === overlay.id ? "opacity-100" : "opacity-0"
@@ -124,6 +134,23 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
               <Image
                 src={overlay.image}
                 alt={`Tapicería ${overlay.id}`}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          ))}
+
+          {/* All floor overlays - preloaded, visibility toggled */}
+          {floorOverlays.map(overlay => (
+            <div
+              key={overlay.id}
+              className={`absolute inset-0 transition-opacity duration-150 pointer-events-none ${selectedFloor?.id === overlay.id ? "opacity-100" : "opacity-0"
+                }`}
+            >
+              <Image
+                src={overlay.image}
+                alt={`Suelo ${overlay.id}`}
                 fill
                 className="object-contain"
                 priority
@@ -173,11 +200,21 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
         </div>
       </div>
 
-      {/* Mobile hint - only visible on touch devices, hidden on desktop */}
-      <div className="absolute bottom-4 left-4 flex items-center gap-2 text-xs text-virreti-gray-400 md:hidden">
-        <Search className="w-3 h-3" />
-        <span>Toca para ampliar</span>
-      </div>
+      {/* Zoom toggle button */}
+      <button
+        onClick={() => setZoomEnabled(!zoomEnabled)}
+        className={`
+          absolute bottom-4 left-4 w-10 h-10 rounded-full flex items-center justify-center
+          transition-all duration-300 shadow-lg
+          ${zoomEnabled
+            ? "bg-[#0F0F0F] text-white"
+            : "bg-white text-virreti-gray-600 hover:bg-virreti-gray-50"
+          }
+        `}
+        title={zoomEnabled ? "Desactivar zoom" : "Activar zoom"}
+      >
+        <Search className="w-5 h-5" />
+      </button>
     </div>
   );
 }

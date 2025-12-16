@@ -5,10 +5,12 @@ import {
   BoatEngine,
   BoatExtra,
   UpholsteryColor,
+  FloorColor,
   ConfiguratorStep,
   getBoat,
   calculateIVA,
   upholsteryColors,
+  floorColors,
 } from "@/data/boats";
 
 interface ConfiguratorState {
@@ -21,6 +23,7 @@ interface ConfiguratorState {
   // Selected options
   selectedColor: BoatColor | null;
   selectedUpholstery: UpholsteryColor | null;
+  selectedFloor: FloorColor | null;
   selectedEngine: BoatEngine | null;
   selectedExtras: BoatExtra[];
 
@@ -36,6 +39,7 @@ interface ConfiguratorState {
 
   selectColor: (color: BoatColor) => void;
   selectUpholstery: (upholstery: UpholsteryColor) => void;
+  selectFloor: (floor: FloorColor) => void;
   selectEngine: (engine: BoatEngine) => void;
   toggleExtra: (extra: BoatExtra) => void;
 
@@ -51,12 +55,14 @@ function calculateSubtotal(
   basePrice: number,
   color: BoatColor | null,
   upholstery: UpholsteryColor | null,
+  floor: FloorColor | null,
   engine: BoatEngine | null,
   extras: BoatExtra[]
 ): number {
   let subtotal = basePrice;
   if (color) subtotal += color.price;
   if (upholstery) subtotal += upholstery.price;
+  if (floor) subtotal += floor.price;
   if (engine) subtotal += engine.price;
   extras.forEach((extra) => { subtotal += extra.price; });
   return subtotal;
@@ -67,6 +73,7 @@ const getInitialState = () => ({
   selectedModel: boat,
   selectedColor: boat.colors[0], // Default: Blanco
   selectedUpholstery: upholsteryColors[0], // Default: first molder
+  selectedFloor: floorColors[0], // Default: first floor
   selectedEngine: null,
   selectedExtras: [],
   subtotal: boat.basePrice,
@@ -97,7 +104,7 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   // Selection actions - optimized to calculate prices inline in single set()
   selectColor: (color) => {
     const state = get();
-    const subtotal = calculateSubtotal(state.selectedModel.basePrice, color, state.selectedUpholstery, state.selectedEngine, state.selectedExtras);
+    const subtotal = calculateSubtotal(state.selectedModel.basePrice, color, state.selectedUpholstery, state.selectedFloor, state.selectedEngine, state.selectedExtras);
     const iva = calculateIVA(subtotal);
     set({
       selectedColor: color,
@@ -109,7 +116,7 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
 
   selectUpholstery: (upholstery) => {
     const state = get();
-    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, upholstery, state.selectedEngine, state.selectedExtras);
+    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, upholstery, state.selectedFloor, state.selectedEngine, state.selectedExtras);
     const iva = calculateIVA(subtotal);
     set({
       selectedUpholstery: upholstery,
@@ -119,9 +126,21 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
     });
   },
 
+  selectFloor: (floor) => {
+    const state = get();
+    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, state.selectedUpholstery, floor, state.selectedEngine, state.selectedExtras);
+    const iva = calculateIVA(subtotal);
+    set({
+      selectedFloor: floor,
+      subtotal,
+      iva,
+      grandTotal: subtotal + iva
+    });
+  },
+
   selectEngine: (engine) => {
     const state = get();
-    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, state.selectedUpholstery, engine, state.selectedExtras);
+    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, state.selectedUpholstery, state.selectedFloor, engine, state.selectedExtras);
     const iva = calculateIVA(subtotal);
     set({
       selectedEngine: engine,
@@ -141,7 +160,7 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
       ? state.selectedExtras.filter((e) => e.id !== extra.id)
       : [...state.selectedExtras, extra];
 
-    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, state.selectedUpholstery, state.selectedEngine, newExtras);
+    const subtotal = calculateSubtotal(state.selectedModel.basePrice, state.selectedColor, state.selectedUpholstery, state.selectedFloor, state.selectedEngine, newExtras);
     const iva = calculateIVA(subtotal);
     set({
       selectedExtras: newExtras,
@@ -186,6 +205,7 @@ export const useCurrentStep = () => useConfiguratorStore((state) => state.curren
 export const useSelectedModel = () => useConfiguratorStore((state) => state.selectedModel);
 export const useSelectedColor = () => useConfiguratorStore((state) => state.selectedColor);
 export const useSelectedUpholstery = () => useConfiguratorStore((state) => state.selectedUpholstery);
+export const useSelectedFloor = () => useConfiguratorStore((state) => state.selectedFloor);
 export const useSelectedEngine = () => useConfiguratorStore((state) => state.selectedEngine);
 export const useSelectedExtras = () => useConfiguratorStore((state) => state.selectedExtras);
 export const useSubtotal = () => useConfiguratorStore((state) => state.subtotal);

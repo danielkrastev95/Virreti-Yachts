@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useConfiguratorStore } from "@/store/configuratorStore";
-import { formatPrice } from "@/data/boats";
+import { formatPrice, standardFeatures } from "@/data/boats";
 import {
   ArrowLeft,
   Mail,
@@ -13,6 +13,7 @@ import {
   Settings,
   Sparkles,
   Check,
+  Info,
 } from "lucide-react";
 
 export function Summary() {
@@ -154,6 +155,29 @@ export function Summary() {
             </div>
           </motion.div>
         )}
+      </motion.div>
+
+      {/* Standard Features */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.45 }}
+        className="glass-light rounded-lg p-4 mb-6"
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Info className="w-4 h-4 text-virreti-gray-500" />
+          <span className="text-sm font-medium text-virreti-black">
+            Equipamiento de Serie Incluido
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-1.5">
+          {standardFeatures.map((feature) => (
+            <div key={feature.id} className="flex items-center gap-2 text-xs text-virreti-gray-600">
+              <Check className="w-3 h-3 text-virreti-gray-400" />
+              <span>{feature.name}</span>
+            </div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Price breakdown */}
