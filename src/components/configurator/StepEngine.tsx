@@ -83,15 +83,13 @@ export function StepEngine() {
                   className={`
                     w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300
                     ${selectedEngine?.id === engine.id
-                      ? "border-virreti-black bg-virreti-black"
+                      ? "border-[#0f0f0f] bg-[#0f0f0f]"
                       : "border-virreti-gray-300"
                     }
                   `}
                 >
                   {selectedEngine?.id === engine.id && (
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                      <Check className="w-4 h-4 text-white" strokeWidth={3} />
-                    </motion.div>
+                    <span style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>✓</span>
                   )}
                 </div>
               </div>

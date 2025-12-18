@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { virretiV20Open, formatPrice } from "@/data/boats";
@@ -24,7 +24,7 @@ function HeroSection() {
       {/* Background Image */}
       <motion.div style={{ scale }} className="absolute inset-0">
         <Image
-          src="/hero-boat.jpg"
+          src="/Ren011.webp"
           alt="VIRRETI V20 OPEN navegando en aguas cristalinas"
           fill
           className="object-cover object-center"
@@ -374,6 +374,184 @@ function FeaturesSection() {
   );
 }
 
+// Seat Positions Showcase - Auto-rotating gallery
+function SeatShowcase() {
+  const [selectedZone, setSelectedZone] = useState(0);
+  const [currentConfig, setCurrentConfig] = useState(0);
+
+  const zones = [
+    { id: '006', name: 'Vista Proa' },
+    { id: '007', name: 'Vista Central' },
+    { id: '008', name: 'Vista Popa' },
+  ];
+
+  const configs = ['A', 'B', 'C'];
+
+  // Auto-rotate configurations every 3.5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentConfig((prev) => (prev + 1) % 3);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [selectedZone]);
+
+  // Reset config when zone changes
+  useEffect(() => {
+    setCurrentConfig(0);
+  }, [selectedZone]);
+
+  const currentImage = `/boat/posiciones_Asientos/${zones[selectedZone].id} ${configs[currentConfig]}.png`;
+
+  return (
+    <section className="py-24 bg-white overflow-hidden">
+      <div className="px-8 md:px-16 lg:px-24">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-12"
+        >
+          <p
+            className="text-virreti-gray-500 text-sm tracking-[0.3em] uppercase mb-4"
+            style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+          >
+            Versatilidad Total
+          </p>
+          <h2
+            className="text-4xl md:text-5xl lg:text-6xl text-virreti-black mb-4"
+            style={{ fontFamily: "'Montserrat', system-ui, sans-serif", fontWeight: 300 }}
+          >
+            Múltiples Configuraciones
+          </h2>
+          <p className="text-virreti-gray-600 max-w-2xl mx-auto text-lg">
+            El mismo espacio, infinitas posibilidades. Cada zona se adapta a tu momento.
+          </p>
+        </motion.div>
+
+        {/* Zone Selector - Horizontal Pills */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex justify-center gap-3 mb-10"
+        >
+          {zones.map((zone, index) => (
+            <button
+              key={zone.id}
+              onClick={() => setSelectedZone(index)}
+              className={`
+                px-6 py-3 rounded-full text-sm font-medium tracking-wider uppercase
+                transition-all duration-300
+                ${selectedZone === index
+                  ? 'bg-[#0f0f0f] text-white'
+                  : 'bg-virreti-gray-100 text-virreti-gray-600 hover:bg-virreti-gray-200 hover:text-virreti-black'
+                }
+              `}
+              style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+            >
+              {zone.name}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Image Gallery */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="relative max-w-6xl mx-auto"
+        >
+          <div className="relative aspect-[16/9] rounded-2xl overflow-hidden">
+            {/* All images stacked, opacity controlled */}
+            {configs.map((config, configIndex) => (
+              <div
+                key={`${zones[selectedZone].id}-${config}`}
+                className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+                style={{
+                  opacity: currentConfig === configIndex ? 1 : 0,
+                  zIndex: currentConfig === configIndex ? 10 : 1
+                }}
+              >
+                <Image
+                  src={`/boat/posiciones_Asientos/${zones[selectedZone].id} ${config}.png`}
+                  alt={`${zones[selectedZone].name} - Configuración ${config}`}
+                  fill
+                  className="object-cover"
+                  priority={configIndex === 0}
+                />
+              </div>
+            ))}
+
+            {/* Gradient overlays for depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
+            {/* Config Indicator Dots */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+              {configs.map((config, index) => (
+                <div
+                  key={config}
+                  className={`
+                    h-1.5 rounded-full transition-all duration-500
+                    ${currentConfig === index
+                      ? 'w-8 bg-white'
+                      : 'w-1.5 bg-white/40'
+                    }
+                  `}
+                />
+              ))}
+            </div>
+
+            {/* Current Config Label */}
+            <div className="absolute bottom-6 right-6 z-20">
+              <motion.div
+                key={currentConfig}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-white/80 text-sm tracking-wider"
+                style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+              >
+                Configuración {configs[currentConfig]}
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Navigation Arrows */}
+          <button
+            onClick={() => setSelectedZone((prev) => (prev - 1 + zones.length) % zones.length)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+          >
+            <ChevronDown className="w-6 h-6 rotate-90" />
+          </button>
+          <button
+            onClick={() => setSelectedZone((prev) => (prev + 1) % zones.length)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+          >
+            <ChevronDown className="w-6 h-6 -rotate-90" />
+          </button>
+        </motion.div>
+
+        {/* Bottom Text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="text-center text-virreti-gray-400 text-sm mt-8 tracking-wider"
+          style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+        >
+          Las imágenes cambian automáticamente mostrando las diferentes configuraciones de asientos
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
+
 // Main Home Page
 export default function HomePage() {
   return (
@@ -381,6 +559,7 @@ export default function HomePage() {
       <HeroSection />
       <AboutSection />
       <ModelShowcase />
+      <SeatShowcase />
       <FeaturesSection />
     </main>
   );

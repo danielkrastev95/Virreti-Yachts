@@ -119,15 +119,13 @@ export function StepExtras() {
                               ${extra.disabled
                                 ? "border-virreti-gray-300 bg-virreti-gray-200"
                                 : isSelected(extra.id)
-                                  ? "border-virreti-black bg-virreti-black"
+                                  ? "border-[#0f0f0f] bg-[#0f0f0f]"
                                   : "border-virreti-gray-300 group-hover:border-virreti-gray-400"
                               }
                             `}
                           >
                             {isSelected(extra.id) && !extra.disabled && (
-                              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                                <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                              </motion.div>
+                              <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>✓</span>
                             )}
                           </div>
 
