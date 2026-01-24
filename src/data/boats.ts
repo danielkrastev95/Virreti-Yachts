@@ -230,7 +230,7 @@ export const extras: BoatExtra[] = [
 export const virretiV20Open: BoatModel = {
   id: "virreti-v20-open",
   name: "VIRRETI V20 OPEN",
-  tagline: "Pure Mediterranean Spirit",
+  tagline: "Espiritú mediterráneo",
   description:
     "El buque insignia de Virreti. Un diseño mediterráneo puro que combina elegancia, funcionalidad y rendimiento excepcional para disfrutar del mar con total libertad.",
   basePrice: 30860,

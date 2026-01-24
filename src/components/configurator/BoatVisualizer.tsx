@@ -106,59 +106,62 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
       <div className="absolute inset-0 bg-gradient-to-br from-[#f8f8f8] via-white to-[#f5f5f5]" />
 
       {/* Boat visualization - centered, spacious */}
-      <div className="relative w-full h-full flex items-center justify-center p-6">
+      <div className="relative w-full h-full flex items-center justify-center p-4">
         <div
           ref={containerRef}
-          className="relative w-full h-full max-w-[1100px] cursor-crosshair"
+          className="relative w-full h-full max-w-[1250px] min-[2000px]:max-w-[1800px] min-[3000px]:max-w-[2400px] cursor-crosshair"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
           onMouseMove={handleMouseMove}
           onTouchStart={handleTouchStart}
         >
-          {/* Base boat image - ALWAYS visible */}
-          <Image
-            src={baseImage}
-            alt={`${selectedModel.name} - Base`}
-            fill
-            className="object-contain pointer-events-none"
-            priority
-          />
+          {/* Scaled Image Wrapper - This applies the visual scale without affecting coordinates */}
+          <div className="absolute inset-0 scale-[1.20] md:scale-110 min-[2000px]:scale-[1.35] min-[3000px]:scale-[1.6] transition-transform duration-500 pointer-events-none">
+            {/* Base boat image - ALWAYS visible */}
+            <Image
+              src={baseImage}
+              alt={`${selectedModel.name} - Base`}
+              fill
+              className="object-contain"
+              priority
+            />
 
-          {/* All upholstery overlays - preloaded, visibility toggled */}
-          {upholsteryOverlays.map(overlay => (
-            <div
-              key={overlay.id}
-              className={`absolute inset-0 transition-opacity duration-150 pointer-events-none ${selectedUpholstery?.id === overlay.id ? "opacity-100" : "opacity-0"
-                }`}
-            >
-              <Image
-                src={overlay.image}
-                alt={`Tapicería ${overlay.id}`}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          ))}
+            {/* All upholstery overlays - preloaded, visibility toggled */}
+            {upholsteryOverlays.map(overlay => (
+              <div
+                key={overlay.id}
+                className={`absolute inset-0 transition-opacity duration-150 ${selectedUpholstery?.id === overlay.id ? "opacity-100" : "opacity-0"
+                  }`}
+              >
+                <Image
+                  src={overlay.image}
+                  alt={`Tapicería ${overlay.id}`}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            ))}
 
-          {/* All floor overlays - preloaded, visibility toggled */}
-          {floorOverlays.map(overlay => (
-            <div
-              key={overlay.id}
-              className={`absolute inset-0 transition-opacity duration-150 pointer-events-none ${selectedFloor?.id === overlay.id ? "opacity-100" : "opacity-0"
-                }`}
-            >
-              <Image
-                src={overlay.image}
-                alt={`Suelo ${overlay.id}`}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          ))}
+            {/* All floor overlays - preloaded, visibility toggled */}
+            {floorOverlays.map(overlay => (
+              <div
+                key={overlay.id}
+                className={`absolute inset-0 transition-opacity duration-150 ${selectedFloor?.id === overlay.id ? "opacity-100" : "opacity-0"
+                  }`}
+              >
+                <Image
+                  src={overlay.image}
+                  alt={`Suelo ${overlay.id}`}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            ))}
+          </div>
 
-          {/* Magnifying glass */}
+          {/* Magnifying glass - Positioned relative to unscaled container */}
           {showMagnifier && (
             <div
               className="absolute pointer-events-none border-2 border-white shadow-2xl rounded-full overflow-hidden z-50"

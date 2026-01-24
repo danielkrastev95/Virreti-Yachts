@@ -318,57 +318,213 @@ function ModelShowcase() {
   );
 }
 
-// Features Section
+// Features Section - Premium Expandable Cards
 function FeaturesSection() {
+  const [expandedIndex, setExpandedIndex] = useState(0);
+
   const features = [
     {
       icon: Anchor,
       title: "Diseño Mediterráneo",
-      description: "Líneas elegantes y funcionales pensadas para el mar Mediterráneo.",
+      subtitle: "Elegancia Funcional",
+      description: "Líneas elegantes y funcionales pensadas para el mar Mediterráneo. Cada curva y detalle refleja nuestra pasión por la navegación.",
+      bgColor: "#0a1628",
+      accentColor: "#ffffff",
     },
     {
       icon: Award,
       title: "Calidad Premium",
-      description: "Materiales de primera calidad y acabados artesanales de excelencia.",
+      subtitle: "Excelencia Artesanal",
+      description: "Materiales de primera calidad y acabados artesanales de excelencia. Construido para durar generaciones.",
+      bgColor: "#1a1a1a",
+      accentColor: "#ffffff",
     },
     {
       icon: Shield,
       title: "Garantía Completa",
-      description: "Respaldo total del fabricante y servicio postventa personalizado.",
+      subtitle: "Tranquilidad Total",
+      description: "Respaldo total del fabricante y servicio postventa personalizado. Tu tranquilidad es nuestra prioridad.",
+      bgColor: "#0d2840",
+      accentColor: "#ffffff",
     },
   ];
 
   return (
-    <section className="py-24 px-6 bg-virreti-gray-50">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-12"
-        >
+    <section className="py-16 md:py-20 px-6 md:px-12 lg:px-20 bg-[#f8f8f8]">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-4 h-[450px] md:h-[380px]">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 40 }}
+              onClick={() => setExpandedIndex(index)}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="text-center"
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className={`
+                relative overflow-hidden cursor-pointer
+                transition-all duration-700 ease-out
+                border border-white/10
+                ${expandedIndex === index
+                  ? 'flex-[3] md:flex-[4]'
+                  : 'flex-1 hover:flex-[1.3]'
+                }
+              `}
+              style={{ backgroundColor: feature.bgColor }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full border border-virreti-gray-300 flex items-center justify-center bg-white">
-                <feature.icon className="w-7 h-7 text-virreti-black" />
+              {/* Decorative Corner Accent */}
+              <div
+                className="absolute top-0 left-0 w-16 h-16"
+                style={{
+                  background: `linear-gradient(135deg, ${feature.accentColor}20 0%, transparent 50%)`
+                }}
+              />
+              <div
+                className="absolute top-0 left-0 w-px h-12"
+                style={{ backgroundColor: feature.accentColor }}
+              />
+              <div
+                className="absolute top-0 left-0 w-12 h-px"
+                style={{ backgroundColor: feature.accentColor }}
+              />
+
+              {/* Large Number Background */}
+              <div
+                className={`
+                  absolute -bottom-8 -right-4 
+                  text-[140px] md:text-[180px] font-bold tracking-tighter leading-none
+                  transition-all duration-700
+                  select-none pointer-events-none
+                `}
+                style={{
+                  fontFamily: "'Montserrat', system-ui, sans-serif",
+                  color: feature.accentColor,
+                  opacity: expandedIndex === index ? 0.15 : 0.08
+                }}
+              >
+                0{index + 1}
               </div>
-              <h3 className="text-xl font-light text-virreti-black tracking-wider mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-virreti-gray-600 text-sm leading-relaxed">
-                {feature.description}
-              </p>
+
+              {/* Content */}
+              <div className="relative h-full p-6 md:p-8 flex flex-col justify-between z-10">
+                {/* Top Section */}
+                <div className="flex items-start justify-between">
+                  <div>
+                    {/* Icon Badge */}
+                    <div
+                      className={`
+                        w-12 h-12 mb-4 flex items-center justify-center
+                        transition-all duration-500
+                        ${expandedIndex === index ? 'scale-100' : 'scale-90'}
+                      `}
+                      style={{
+                        backgroundColor: `${feature.accentColor}15`,
+                        border: `1px solid ${feature.accentColor}40`
+                      }}
+                    >
+                      <feature.icon
+                        className="w-6 h-6"
+                        style={{ color: feature.accentColor }}
+                      />
+                    </div>
+
+                    {/* Subtitle */}
+                    <p
+                      className={`
+                        text-xs tracking-[0.2em] uppercase mb-2
+                        transition-all duration-500
+                        ${expandedIndex === index ? 'opacity-100' : 'opacity-0'}
+                      `}
+                      style={{
+                        fontFamily: "'DM Sans', system-ui, sans-serif",
+                        color: feature.accentColor
+                      }}
+                    >
+                      {feature.subtitle}
+                    </p>
+
+                    <h3
+                      className={`
+                        text-white tracking-wide uppercase leading-tight
+                        transition-all duration-500
+                        ${expandedIndex === index
+                          ? 'text-xl md:text-2xl'
+                          : 'text-sm md:text-base'
+                        }
+                      `}
+                      style={{ fontFamily: "'Montserrat', system-ui, sans-serif", fontWeight: 500 }}
+                    >
+                      {feature.title}
+                    </h3>
+                  </div>
+
+                  {/* Toggle Indicator */}
+                  <div
+                    className={`
+                      w-10 h-10 flex items-center justify-center
+                      border transition-all duration-300
+                      ${expandedIndex === index
+                        ? 'rotate-45'
+                        : 'rotate-0 hover:scale-110'
+                      }
+                    `}
+                    style={{
+                      borderColor: `${feature.accentColor}60`,
+                      color: feature.accentColor
+                    }}
+                  >
+                    <span className="text-xl font-light">+</span>
+                  </div>
+                </div>
+
+                {/* Description - Only visible when expanded */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    opacity: expandedIndex === index ? 1 : 0,
+                    y: expandedIndex === index ? 0 : 20
+                  }}
+                  transition={{ duration: 0.4, delay: expandedIndex === index ? 0.2 : 0 }}
+                  className={`
+                    ${expandedIndex === index ? 'pointer-events-auto' : 'pointer-events-none'}
+                  `}
+                >
+                  <div
+                    className="w-16 h-px mb-4"
+                    style={{ backgroundColor: feature.accentColor }}
+                  />
+                  <p
+                    className="text-white/70 text-sm md:text-base leading-relaxed max-w-md"
+                    style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+                  >
+                    {feature.description}
+                  </p>
+
+                  {/* Learn More Link */}
+                  <div
+                    className="mt-4 inline-flex items-center gap-2 text-xs tracking-wider uppercase cursor-pointer hover:gap-3 transition-all duration-300"
+                    style={{
+                      fontFamily: "'DM Sans', system-ui, sans-serif",
+                      color: feature.accentColor
+                    }}
+                  >
+                    Descubrir más
+                    <ArrowRight className="w-3 h-3" />
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Bottom Accent Line */}
+              <div
+                className={`
+                  absolute bottom-0 left-0 h-1 transition-all duration-700
+                  ${expandedIndex === index ? 'w-full' : 'w-0'}
+                `}
+                style={{ backgroundColor: feature.accentColor }}
+              />
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -403,51 +559,51 @@ function SeatShowcase() {
   const currentImage = `/boat/posiciones_Asientos/${zones[selectedZone].id} ${configs[currentConfig]}.png`;
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
-      <div className="px-8 md:px-16 lg:px-24">
+    <section className="py-16 md:py-20 bg-[#fafafa] overflow-hidden">
+      <div className="px-6 md:px-12 lg:px-20">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-10"
         >
           <p
-            className="text-virreti-gray-500 text-sm tracking-[0.3em] uppercase mb-4"
+            className="text-[#8a8a8a] text-xs tracking-[0.3em] uppercase mb-3"
             style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
           >
             Versatilidad Total
           </p>
           <h2
-            className="text-4xl md:text-5xl lg:text-6xl text-virreti-black mb-4"
+            className="text-3xl md:text-4xl lg:text-5xl text-[#1a1a1a] mb-3"
             style={{ fontFamily: "'Montserrat', system-ui, sans-serif", fontWeight: 300 }}
           >
             Múltiples Configuraciones
           </h2>
-          <p className="text-virreti-gray-600 max-w-2xl mx-auto text-lg">
+          <p className="text-[#666] max-w-xl mx-auto text-base">
             El mismo espacio, infinitas posibilidades. Cada zona se adapta a tu momento.
           </p>
         </motion.div>
 
-        {/* Zone Selector - Horizontal Pills */}
+        {/* Zone Selector - Elegant Pills */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center gap-3 mb-10"
+          className="flex justify-center gap-2 mb-8"
         >
           {zones.map((zone, index) => (
             <button
               key={zone.id}
               onClick={() => setSelectedZone(index)}
               className={`
-                px-6 py-3 rounded-full text-sm font-medium tracking-wider uppercase
-                transition-all duration-300
+                px-5 py-2.5 text-xs font-medium tracking-wider uppercase
+                transition-all duration-300 border
                 ${selectedZone === index
-                  ? 'bg-[#0f0f0f] text-white'
-                  : 'bg-virreti-gray-100 text-virreti-gray-600 hover:bg-virreti-gray-200 hover:text-virreti-black'
+                  ? 'bg-[#1a1a1a] text-white border-[#1a1a1a]'
+                  : 'bg-white text-[#666] border-[#e0e0e0] hover:border-[#1a1a1a] hover:text-[#1a1a1a]'
                 }
               `}
               style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
@@ -459,13 +615,13 @@ function SeatShowcase() {
 
         {/* Image Gallery */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="relative max-w-6xl mx-auto"
+          className="relative max-w-5xl mx-auto"
         >
-          <div className="relative aspect-[16/9] rounded-2xl overflow-hidden">
+          <div className="relative aspect-[16/10] overflow-hidden bg-[#f5f5f5]">
             {/* All images stacked, opacity controlled */}
             {configs.map((config, configIndex) => (
               <div
@@ -480,39 +636,36 @@ function SeatShowcase() {
                   src={`/boat/posiciones_Asientos/${zones[selectedZone].id} ${config}.png`}
                   alt={`${zones[selectedZone].name} - Configuración ${config}`}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority={configIndex === 0}
                 />
               </div>
             ))}
 
-            {/* Gradient overlays for depth */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-
-            {/* Config Indicator Dots */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+            {/* Config Indicator - Minimal line */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
               {configs.map((config, index) => (
                 <div
                   key={config}
                   className={`
-                    h-1.5 rounded-full transition-all duration-500
+                    h-0.5 rounded-full transition-all duration-500
                     ${currentConfig === index
-                      ? 'w-8 bg-white'
-                      : 'w-1.5 bg-white/40'
+                      ? 'w-8 bg-[#1a1a1a]'
+                      : 'w-2 bg-[#ccc]'
                     }
                   `}
                 />
               ))}
             </div>
 
-            {/* Current Config Label */}
-            <div className="absolute bottom-6 right-6 z-20">
+            {/* Current Config Label - Clean minimal */}
+            <div className="absolute bottom-4 right-4 z-20">
               <motion.div
                 key={currentConfig}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="text-white/80 text-sm tracking-wider"
+                className="text-[#666] text-xs tracking-wider bg-white/90 backdrop-blur-sm px-3 py-1.5"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
                 Configuración {configs[currentConfig]}
@@ -520,31 +673,31 @@ function SeatShowcase() {
             </div>
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows - Elegant minimal */}
           <button
             onClick={() => setSelectedZone((prev) => (prev - 1 + zones.length) % zones.length)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white border border-[#e0e0e0] flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300"
           >
-            <ChevronDown className="w-6 h-6 rotate-90" />
+            <ChevronDown className="w-5 h-5 rotate-90" />
           </button>
           <button
             onClick={() => setSelectedZone((prev) => (prev + 1) % zones.length)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white border border-[#e0e0e0] flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300"
           >
-            <ChevronDown className="w-6 h-6 -rotate-90" />
+            <ChevronDown className="w-5 h-5 -rotate-90" />
           </button>
         </motion.div>
 
-        {/* Bottom Text */}
+        {/* Bottom Text - Subtle */}
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-center text-virreti-gray-400 text-sm mt-8 tracking-wider"
+          className="text-center text-[#999] text-xs mt-6 tracking-wider"
           style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
         >
-          Las imágenes cambian automáticamente mostrando las diferentes configuraciones de asientos
+          Las imágenes cambian automáticamente mostrando las diferentes configuraciones
         </motion.p>
       </div>
     </section>

@@ -1,75 +1,42 @@
-# Virreti Yachts
+# Virreti Yachts - Web Application
 
-Sitio web oficial y configurador para **Virreti Yachts**, fabricante español de embarcaciones de lujo.
+Plataforma de visualización y configuración de embarcaciones de lujo.
 
-## 🚤 Modelo Destacado
+## Stack Tecnológico
 
-### VIRRETI V20 OPEN
-- **Eslora:** 6.15m
-- **Manga:** 2.35m
-- **Capacidad:** 8 personas
-- **Precio base:** 30.860€ (sin IVA ni motor)
+*   **Framework**: Next.js 16 (App Router)
+*   **Librería UI**: React 19
+*   **Estilos**: Tailwind CSS 4
+*   **Animaciones**: Framer Motion 12
+*   **Gestión de Estado**: Zustand 5
+*   **Iconografía**: Lucide React
 
-## ✨ Características
+## Estructura del Proyecto
 
-### Página Principal
-- Hero section con imagen del V20 OPEN
-- Especificaciones técnicas
-- Sección "Sobre Nosotros"
-- Galería de modelos
+*   `src/app`: Definición de rutas y páginas (About, Contact, Configurator).
+*   `src/components`: Componentes de interfaz divididos por contexto (Layout, Configurator).
+*   `src/store`: Estado global de la aplicación (Configuración de barcos).
+*   `src/data`: Datos estáticos, especificaciones técnicas y lógica de precios.
+*   `public`: Activos estáticos, modelos 3D y tipografías premium.
 
-### Configurador Interactivo (`/configurator`)
-- **Paso 1 - Exterior:** Selección de color de casco y tapicería
-- **Paso 2 - Motor:** 3 opciones de motorización (Mercury/Tohatsu)
-- **Paso 3 - Extras:** Personalización con opciones adicionales
-- **Paso 4 - Resumen:** Desglose de precios con IVA (21%)
+## Características Técnicas
 
-### Funcionalidades del Configurador
-- 🔍 Lupa de magnificación interactiva (hover en desktop, tap en móvil)
-- 📱 Diseño responsive (desktop y móvil)
-- 💰 Cálculo de precios en tiempo real
-- 🎨 Visualización de colores de tapicería
+*   **Configurador Dinámico**: Sistema de pasos para personalización de modelos, motores y extras con cálculo de precio en tiempo real.
+*   **Visualizador Reactivo**: Actualización instantánea de activos visuales según la selección del usuario.
+*   **Diseño Premium**: Implementación de tipografías Bodoni Moda y Montserrat con enfoque en alto contraste y estética de lujo.
+*   **Optimización**: Uso de Server-Side Rendering (SSR) y optimización de imágenes nativa de Next.js para alto rendimiento.
 
-## 🛠️ Tech Stack
+## Desarrollo
 
-- **Framework:** Next.js 15 (App Router)
-- **Estilos:** Tailwind CSS v4
-- **Estado:** Zustand
-- **Animaciones:** Framer Motion
-- **Tipografía:** Montserrat, DM Sans
-- **Lenguaje:** TypeScript
-
-## 🚀 Instalación
-
-```bash
-# Clonar repositorio
-git clone https://github.com/danielkrastev95/Virreti-Yachts.git
-
-# Instalar dependencias
-npm install
-
-# Iniciar servidor de desarrollo
-npm run dev
-```
-
-Abrir [http://localhost:3000](http://localhost:3000)
-
-## 📁 Estructura
-
-```
-src/
-├── app/                    # Páginas (Next.js App Router)
-│   ├── page.tsx           # Página principal
-│   └── configurator/      # Configurador
-├── components/
-│   ├── configurator/      # Componentes del configurador
-│   └── layout/            # Navbar, Footer
-├── data/
-│   └── boats.ts           # Datos del modelo y precios
-└── store/
-    └── configuratorStore.ts # Estado global (Zustand)
-```
-
-## 📄 Licencia
-
-Proyecto privado - Virreti Yachts © 2025
+1. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+2. Iniciar servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+3. Construir para producción:
+   ```bash
+   npm run build
+   ```
