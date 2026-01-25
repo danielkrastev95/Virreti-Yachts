@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useCurrentStep, useGrandTotal } from "@/store/configuratorStore";
+import { useCurrentStep, useGrandTotal, useConfiguratorStore } from "@/store/configuratorStore";
 import { formatPrice } from "@/data/boats";
 import { BoatVisualizer } from "./BoatVisualizer";
 import { StepIndicator } from "./StepIndicator";
@@ -11,7 +12,7 @@ import { StepColor } from "./StepColor";
 import { StepEngine } from "./StepEngine";
 import { StepExtras } from "./StepExtras";
 import { Summary } from "./Summary";
-import { RotateCcw, Share2 } from "lucide-react";
+import { RotateCcw, Share2, Check } from "lucide-react";
 
 const stepVariants = {
   initial: { opacity: 0, x: 20 },
@@ -28,6 +29,72 @@ const stepTransition = {
 export function Configurator() {
   const currentStep = useCurrentStep();
   const grandTotal = useGrandTotal();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+
+  // Hydrate from localStorage and URL on mount
+  useEffect(() => {
+    const hydrateAndRecalculate = async () => {
+      // Rehydrate from localStorage
+      await useConfiguratorStore.persist.rehydrate();
+
+      // Try to load from URL (takes precedence over localStorage)
+      const loadedFromURL = useConfiguratorStore.getState().loadFromURL();
+
+      if (loadedFromURL && process.env.NODE_ENV === 'development') {
+        console.log('Configuration loaded from URL');
+      }
+
+      // Force recalculate prices after hydration to ensure everything is in sync
+      const state = useConfiguratorStore.getState();
+      const prices = state.calculatePrices();
+      useConfiguratorStore.setState({
+        subtotal: prices.subtotal,
+        iva: prices.iva,
+        grandTotal: prices.grandTotal,
+      });
+
+      setIsHydrated(true);
+    };
+
+    hydrateAndRecalculate();
+  }, []);
+
+  const handleShare = async () => {
+    const shareURL = useConfiguratorStore.getState().generateShareURL();
+
+    try {
+      // Try to use native share API first (mobile)
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Mi configuración VIRRETI V20 OPEN',
+          text: 'Mira la configuración de mi yate Virreti',
+          url: shareURL,
+        });
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(shareURL);
+        setShowCopied(true);
+        setTimeout(() => setShowCopied(false), 2000);
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sharing:', error);
+      }
+    }
+  };
+
+  const handleReset = () => {
+    if (confirm('¿Estás seguro de que quieres reiniciar la configuración?')) {
+      useConfiguratorStore.getState().resetConfiguration();
+      // Clear localStorage
+      localStorage.removeItem('virreti-configurator');
+      // Remove URL params
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', '/configurator');
+      }
+    }
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -43,6 +110,18 @@ export function Configurator() {
         return <StepColor />;
     }
   };
+
+  // Show loading state during hydration
+  if (!isHydrated) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-virreti-black mb-4"></div>
+          <p className="text-virreti-gray-500 text-sm">Cargando configuración...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -109,13 +188,30 @@ export function Configurator() {
           {/* Fixed bottom bar with price and actions */}
           <div className="h-16 border-t border-virreti-gray-200 flex items-center px-4 gap-2 lg:gap-3 flex-shrink-0 bg-white">
             {/* Action buttons - hidden on very small screens */}
-            <button className="hidden sm:flex flex-col items-center justify-center p-2 text-virreti-gray-500 hover:text-virreti-black transition-colors">
+            <button
+              onClick={handleReset}
+              className="hidden sm:flex flex-col items-center justify-center p-2 text-virreti-gray-500 hover:text-virreti-black transition-colors"
+              title="Reiniciar configuración"
+            >
               <RotateCcw className="w-5 h-5" />
               <span className="text-[10px] mt-1 uppercase tracking-wide">Reset</span>
             </button>
-            <button className="hidden sm:flex flex-col items-center justify-center p-2 text-virreti-gray-500 hover:text-virreti-black transition-colors">
-              <Share2 className="w-5 h-5" />
-              <span className="text-[10px] mt-1 uppercase tracking-wide">Compartir</span>
+            <button
+              onClick={handleShare}
+              className="hidden sm:flex flex-col items-center justify-center p-2 text-virreti-gray-500 hover:text-virreti-black transition-colors relative"
+              title="Compartir configuración"
+            >
+              {showCopied ? (
+                <>
+                  <Check className="w-5 h-5 text-green-600" />
+                  <span className="text-[10px] mt-1 uppercase tracking-wide text-green-600">Copiado</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-5 h-5" />
+                  <span className="text-[10px] mt-1 uppercase tracking-wide">Compartir</span>
+                </>
+              )}
             </button>
 
             {/* Price and CTA */}

@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -18,14 +19,15 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     const isFullscreen = FULLSCREEN_ROUTES.some(route => pathname.startsWith(route));
 
     if (isFullscreen) {
-        return <>{children}</>;
+        return <ErrorBoundary>{children}</ErrorBoundary>;
     }
 
     return (
-        <>
+        <ErrorBoundary>
             <Navbar />
             {children}
             <Footer />
-        </>
+        </ErrorBoundary>
     );
 }
+

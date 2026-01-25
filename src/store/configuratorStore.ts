@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   BoatModel,
   BoatColor,
@@ -11,6 +12,9 @@ import {
   calculateIVA,
   upholsteryColors,
   floorColors,
+  hullColors,
+  engines,
+  extras,
 } from "@/data/boats";
 
 interface ConfiguratorState {
@@ -45,6 +49,10 @@ interface ConfiguratorState {
 
   resetConfiguration: () => void;
   calculatePrices: () => { subtotal: number; iva: number; grandTotal: number };
+
+  // New: URL sharing actions
+  generateShareURL: () => string;
+  loadFromURL: () => boolean;
 }
 
 // Get the single boat model
@@ -81,25 +89,27 @@ const getInitialState = () => ({
   grandTotal: boat.basePrice + calculateIVA(boat.basePrice),
 });
 
-export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
-  ...getInitialState(),
+export const useConfiguratorStore = create<ConfiguratorState>()(
+  persist(
+    (set, get) => ({
+      ...getInitialState(),
 
-  // Navigation actions
-  setStep: (step) => set({ currentStep: step }),
+      // Navigation actions
+      setStep: (step) => set({ currentStep: step }),
 
-  nextStep: () => {
-    const { currentStep } = get();
-    if (currentStep < 4) {
-      set({ currentStep: (currentStep + 1) as ConfiguratorStep });
-    }
-  },
+      nextStep: () => {
+        const { currentStep } = get();
+        if (currentStep < 4) {
+          set({ currentStep: (currentStep + 1) as ConfiguratorStep });
+        }
+      },
 
-  prevStep: () => {
-    const { currentStep } = get();
-    if (currentStep > 1) {
-      set({ currentStep: (currentStep - 1) as ConfiguratorStep });
-    }
-  },
+      prevStep: () => {
+        const { currentStep } = get();
+        if (currentStep > 1) {
+          set({ currentStep: (currentStep - 1) as ConfiguratorStep });
+        }
+      },
 
   // Selection actions - optimized to calculate prices inline in single set()
   selectColor: (color) => {
@@ -173,7 +183,7 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   resetConfiguration: () => set(getInitialState()),
 
   calculatePrices: () => {
-    const { selectedModel, selectedColor, selectedUpholstery, selectedEngine, selectedExtras } = get();
+    const { selectedModel, selectedColor, selectedUpholstery, selectedFloor, selectedEngine, selectedExtras } = get();
 
     let subtotal = selectedModel.basePrice;
 
@@ -183,6 +193,10 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
 
     if (selectedUpholstery) {
       subtotal += selectedUpholstery.price;
+    }
+
+    if (selectedFloor) {
+      subtotal += selectedFloor.price;
     }
 
     if (selectedEngine) {
@@ -198,7 +212,134 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
 
     return { subtotal, iva, grandTotal };
   },
-}));
+
+  // Generate shareable URL with configuration
+  generateShareURL: () => {
+    const state = get();
+    const config = {
+      step: state.currentStep,
+      color: state.selectedColor?.id,
+      upholstery: state.selectedUpholstery?.id,
+      floor: state.selectedFloor?.id,
+      engine: state.selectedEngine?.id,
+      extras: state.selectedExtras.map(e => e.id),
+    };
+
+    try {
+      const encoded = btoa(JSON.stringify(config));
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+      return `${baseUrl}/configurator?config=${encoded}`;
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to generate share URL:', error);
+      }
+      return '';
+    }
+  },
+
+  // Load configuration from URL parameter
+  loadFromURL: () => {
+    if (typeof window === 'undefined') return false;
+
+    const params = new URLSearchParams(window.location.search);
+    const configParam = params.get('config');
+
+    if (!configParam) return false;
+
+    try {
+      const config = JSON.parse(atob(configParam));
+
+      // Restore color
+      if (config.color) {
+        const color = hullColors.find(c => c.id === config.color);
+        if (color) get().selectColor(color);
+      }
+
+      // Restore upholstery
+      if (config.upholstery) {
+        const upholstery = upholsteryColors.find(u => u.id === config.upholstery);
+        if (upholstery) get().selectUpholstery(upholstery);
+      }
+
+      // Restore floor
+      if (config.floor) {
+        const floor = floorColors.find(f => f.id === config.floor);
+        if (floor) get().selectFloor(floor);
+      }
+
+      // Restore engine
+      if (config.engine) {
+        const engine = engines.find(e => e.id === config.engine);
+        if (engine) get().selectEngine(engine);
+      }
+
+      // Restore extras
+      if (config.extras && Array.isArray(config.extras)) {
+        config.extras.forEach((extraId: string) => {
+          const extra = extras.find(e => e.id === extraId);
+          if (extra && !extra.disabled) {
+            get().toggleExtra(extra);
+          }
+        });
+      }
+
+      // Restore step
+      if (config.step) {
+        set({ currentStep: config.step });
+      }
+
+      return true;
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load configuration from URL:', error);
+      }
+      return false;
+    }
+  },
+    }),
+    {
+      name: 'virreti-configurator', // localStorage key
+      storage: createJSONStorage(() => localStorage),
+
+      // Only persist user selections, not computed values
+      partialize: (state) => ({
+        _version: 1, // Schema version for future migrations
+        currentStep: state.currentStep,
+        selectedColor: state.selectedColor,
+        selectedUpholstery: state.selectedUpholstery,
+        selectedFloor: state.selectedFloor,
+        selectedEngine: state.selectedEngine,
+        selectedExtras: state.selectedExtras,
+        // Prices will be recalculated automatically on load
+      }),
+
+      // Skip hydration during SSR, we'll manually rehydrate on client
+      skipHydration: true,
+
+      // Recalculate prices after rehydration
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Recalculate prices based on restored selections
+          const subtotal = calculateSubtotal(
+            state.selectedModel.basePrice,
+            state.selectedColor,
+            state.selectedUpholstery,
+            state.selectedFloor,
+            state.selectedEngine,
+            state.selectedExtras
+          );
+          const iva = calculateIVA(subtotal);
+          const grandTotal = subtotal + iva;
+
+          // Update prices in the store
+          state.subtotal = subtotal;
+          state.iva = iva;
+          state.grandTotal = grandTotal;
+        }
+      },
+    }
+  )
+);
 
 // Selector hooks for optimized re-renders
 export const useCurrentStep = () => useConfiguratorStore((state) => state.currentStep);

@@ -677,12 +677,14 @@ function SeatShowcase() {
           <button
             onClick={() => setSelectedZone((prev) => (prev - 1 + zones.length) % zones.length)}
             className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white border border-[#e0e0e0] flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300"
+            aria-label="Vista anterior"
           >
             <ChevronDown className="w-5 h-5 rotate-90" />
           </button>
           <button
             onClick={() => setSelectedZone((prev) => (prev + 1) % zones.length)}
             className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white border border-[#e0e0e0] flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300"
+            aria-label="Vista siguiente"
           >
             <ChevronDown className="w-5 h-5 -rotate-90" />
           </button>

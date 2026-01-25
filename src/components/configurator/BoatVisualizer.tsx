@@ -138,7 +138,8 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
                   alt={`Tapicería ${overlay.id}`}
                   fill
                   className="object-contain"
-                  priority
+                  priority={selectedUpholstery?.id === overlay.id}
+                  loading={selectedUpholstery?.id === overlay.id ? "eager" : "lazy"}
                 />
               </div>
             ))}
@@ -155,7 +156,8 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
                   alt={`Suelo ${overlay.id}`}
                   fill
                   className="object-contain"
-                  priority
+                  priority={selectedFloor?.id === overlay.id}
+                  loading={selectedFloor?.id === overlay.id ? "eager" : "lazy"}
                 />
               </div>
             ))}
@@ -214,6 +216,7 @@ export function BoatVisualizer({ className = "" }: BoatVisualizerProps) {
             : "bg-white text-virreti-gray-600 hover:bg-virreti-gray-50"
           }
         `}
+        aria-label={zoomEnabled ? "Desactivar zoom" : "Activar zoom"}
         title={zoomEnabled ? "Desactivar zoom" : "Activar zoom"}
       >
         <Search className="w-5 h-5" />
